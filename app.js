@@ -24,6 +24,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Configure passport and sessions
+app.use(session({
+  secret: 'kgfiodajierhjiaej',
+  resave: false,
+  saveUninitialized: true,
+}));
 passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
