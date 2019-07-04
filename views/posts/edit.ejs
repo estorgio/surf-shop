@@ -1,3 +1,4 @@
+<% layout('layouts/boilerplate') -%>
 <h1>Edit Post!</h1>
 
 <form action="/posts/<%= post.id %>?_method=PUT" method="POST" id="postEditForm" enctype="multipart/form-data">
@@ -19,17 +20,4 @@
   <input type="submit">
 </form>
 
-<script>
-  const postEditForm = document.querySelector('#postEditForm');
-  postEditForm.addEventListener('submit', (event) => {
-    const imageUploads = document.querySelector('#imageUpload').files.length;
-    const existingImgs = document.querySelectorAll('.imageDeleteCheckbox').length;
-    const imgDeletions = document.querySelectorAll('.imageDeleteCheckbox:checked').length;
-    const newTotal = existingImgs - imgDeletions + imageUploads;
-    if (newTotal > 4) {
-      event.preventDefault();
-      const removeAmt = newTotal - 4;
-      alert(`You need to remove at least ${removeAmt} (more) image${removeAmt === 1 ? '' : 's'}.`);
-    }
-  });
-</script>
+<script src="/javascripts/post-edit.js"></script>
