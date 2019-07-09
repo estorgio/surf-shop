@@ -10,6 +10,8 @@ const User = require('./models/user');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override');
+// const seedPosts = require('./seeds');
+// seedPosts();
 
 // Require routes
 const indexRouter = require('./routes/index');
@@ -19,7 +21,7 @@ const reviewsRouter = require('./routes/reviews');
 const app = express();
 
 // Connect to the database
-mongoose.connect('mongodb://localhost:27017/surf-shop', {
+mongoose.connect('mongodb://localhost:27017/surf-shop-pagination', {
   useNewUrlParser: true,
   useCreateIndex: true,
 })
