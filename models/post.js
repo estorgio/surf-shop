@@ -25,11 +25,20 @@ const PostSchema = new Schema({
       ref: 'Review',
     },
   ],
+  avgRating: { type: Number, default: 0 },
 });
 
 PostSchema.pre('remove', async function () {
   await Review.remove({ _id: { $in: this.reviews } });
 });
+
+PostSchema.methods.calculateAvgRating = async function () {
+  let ratingsTotal = this.reviews.reduce((acc, review) => acc + review.rating, 0);
+  this.avgRating = Math.round((ratingsTotal / this.reviews.length || 0) * 10) / 10;
+  const floorRating = Math.floor(this.avgRating);
+  await this.save();
+  return floorRating;
+};
 
 PostSchema.plugin(mongoosePaginate);
 
