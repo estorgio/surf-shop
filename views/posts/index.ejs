@@ -1,8 +1,10 @@
 <% layout('layouts/boilerplate') -%>
 <h1>Posts Index</h1>
 
-<% include ../partials/paginate-posts %>
+<div id="map"></div>
 
+<% include ../partials/paginate-posts %>
+<!--  -->
 <% posts.docs.forEach((post) => { %>
 <div>
   <h2><%= post.title %></h2>
@@ -12,5 +14,11 @@
   <div><a href="/posts/<%= post.id %>">View more</a></div>
 </div>
 <% }); %>
-
+<!--  -->
 <% include ../partials/paginate-posts %>
+
+<script>
+  mapboxgl.accessToken = '<%= MAPBOX_TOKEN %>';
+  var posts = { features: <%- JSON.stringify(posts.docs) %> };
+</script>
+<script src="/javascripts/allPostsClusterMap.js"></script>

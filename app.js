@@ -21,12 +21,13 @@ const reviewsRouter = require('./routes/reviews');
 const app = express();
 
 // Connect to the database
-mongoose.connect('mongodb://localhost:27017/surf-shop-pagination', {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-})
+mongoose
+  .connect('mongodb://localhost:27017/surf-shop-pagination', {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+  })
   .then(() => console.log('Connected to the database'))
-  .catch((err) => console.log('Database error', err));
+  .catch(err => console.log('Database error', err));
 
 // view engine setup
 app.engine('ejs', engine);
@@ -41,11 +42,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 
 // Configure passport and sessions
-app.use(session({
-  secret: 'kgfiodajierhjiaej',
-  resave: false,
-  saveUninitialized: true,
-}));
+app.use(
+  session({
+    secret: 'kgfiodajierhjiaej',
+    resave: false,
+    saveUninitialized: true,
+  }),
+);
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(User.createStrategy());
@@ -59,10 +62,10 @@ app.use((req, res, next) => {
   //   'username': 'john',
   // };
   const reserveUsers = [
-    { '_id': '5d286bde512a2b1754bc5909', username: 'john1' },
-    { '_id': '5d286bee512a2b1754bc590a', username: 'john2' },
-    { '_id': '5d286bf3512a2b1754bc590b', username: 'john3' },
-    { '_id': '5d286bf9512a2b1754bc590c', username: 'john4' },
+    { _id: '5d286bde512a2b1754bc5909', username: 'john1' },
+    { _id: '5d286bee512a2b1754bc590a', username: 'john2' },
+    { _id: '5d286bf3512a2b1754bc590b', username: 'john3' },
+    { _id: '5d286bf9512a2b1754bc590c', username: 'john4' },
   ];
   req.user = reserveUsers[3];
 
@@ -85,12 +88,12 @@ app.use('/posts', postsRouter);
 app.use('/posts/:id/reviews', reviewsRouter);
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function (err, req, res, next) {
+app.use(function(err, req, res, next) {
   // // set locals, only providing error in development
   // res.locals.message = err.message;
   // res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -101,7 +104,6 @@ app.use(function (err, req, res, next) {
   console.log(err);
   req.session.error = err.message;
   res.redirect('back');
-
 });
 
 module.exports = app;

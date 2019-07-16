@@ -13,13 +13,17 @@ cloudinary.config({
 
 module.exports = {
   async postIndex(req, res, next) {
-    const posts = await Post.paginate({}, {
-      page: req.query.page || 1,
-      limit: 10,
-    });
+    const posts = await Post.paginate(
+      {},
+      {
+        page: req.query.page || 1,
+        limit: 10,
+        sort: '-_id',
+      },
+    );
     posts.page = parseInt(posts.page, 10);
     posts.pages = parseInt(posts.pages, 10);
-    res.render('posts/index', { posts });
+    res.render('posts/index', { posts, MAPBOX_TOKEN });
   },
 
   postNew(req, res, next) {
@@ -38,29 +42,34 @@ module.exports = {
     const { body: match } = await geocodingClient
       .forwardGeocode({
         query: req.body.post.location,
-        limit: 1
+        limit: 1,
       })
       .send();
-    req.body.post.coordinates = match.features[0].geometry.coordinates;
+    req.body.post.geometry = match.features[0].geometry;
     const post = await Post.create(req.body.post);
+    post.properties.description = `<strong><a href="/posts/${post._id}">${
+      post.title
+    }</a></strong><p>${post.location}</p><p>${post.description.substring(
+      0,
+      20,
+    )}...</p>`;
+    await post.save();
     req.session.success = 'Post created successfully';
     res.redirect(`/posts/${post.id}`);
   },
 
   async postShow(req, res, next) {
     res.locals.MAPBOX_TOKEN = MAPBOX_TOKEN;
-    const post = await Post
-      .findById(req.params.id)
-      .populate({
-        path: 'reviews',
-        options: {
-          sort: { '_id': -1 },
-        },
-        populate: {
-          path: 'author',
-          model: 'User',
-        }
-      });
+    const post = await Post.findById(req.params.id).populate({
+      path: 'reviews',
+      options: {
+        sort: { _id: -1 },
+      },
+      populate: {
+        path: 'author',
+        model: 'User',
+      },
+    });
     const floorRating = await post.calculateAvgRating();
     // const floorRating = post.calculateAvgRating();
     res.render('posts/show', { post, floorRating });
@@ -100,16 +109,22 @@ module.exports = {
       const { body: match } = await geocodingClient
         .forwardGeocode({
           query: req.body.post.location,
-          limit: 1
+          limit: 1,
         })
         .send();
-      post.coordinates = match.features[0].geometry.coordinates;
+      post.geometry = match.features[0].geometry;
       post.location = req.body.post.location;
     }
 
     post.title = req.body.post.title;
     post.description = req.body.post.description;
     post.price = req.body.post.price;
+    post.properties.description = `<strong><a href="/posts/${post._id}">${
+      post.title
+    }</a></strong><p>${post.location}</p><p>${post.description.substring(
+      0,
+      20,
+    )}...</p>`;
     await post.save();
 
     res.redirect(`/posts/${post.id}`);
@@ -123,5 +138,5 @@ module.exports = {
     await post.remove();
     req.session.success = 'Post deleted successfully';
     res.redirect('/posts');
-  }
+  },
 };
