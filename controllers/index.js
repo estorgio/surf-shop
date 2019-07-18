@@ -10,23 +10,48 @@ module.exports = {
     res.render('index', { posts, MAPBOX_TOKEN, title: 'Surf Shop - Home' });
   },
 
-  async postRegister(req, res, next) {
-    const { username, password, email, image } = req.body;
-
-    const user = new User({
-      username,
-      email,
-      image,
-    });
-    await User.register(user, password);
-    res.redirect('/');
+  getRegister(req, res, next) {
+    res.render('register', { title: 'Register', username: '', email: '' });
   },
 
-  postLogin(req, res, next) {
-    passport.authenticate('local', {
-      successRedirect: '/',
-      failureRedirect: '/login',
-    })(req, res, next);
+  async postRegister(req, res, next) {
+    try {
+      const user = await User.register(new User(req.body), req.body.password);
+      req.login(user, function(err) {
+        if (err) return next(err);
+        req.session.success = `Welcome to Surf Shop, ${user.username}!`;
+        res.redirect('/');
+      });
+    } catch (err) {
+      const { username, email } = req.body;
+      let error = err.message;
+      console.log('SOMEERROR', err.stack);
+      if (
+        error.includes('duplicate') &&
+        error.includes('index: email_1 dup key')
+      ) {
+        error = 'A user with the given email is already registered';
+      }
+      res.render('register', { title: 'Register', username, email, error });
+    }
+  },
+
+  getLogin(req, res, next) {
+    if (req.isAuthenticated()) return res.redirect('/');
+    res.render('login', { title: 'Login' });
+  },
+
+  async postLogin(req, res, next) {
+    const { username, password } = req.body;
+    const { user, error } = await User.authenticate()(username, password);
+    if (!user && error) return next(error);
+    req.login(user, err => {
+      if (err) return next(err);
+      req.session.success = `Welcome back, ${username}!`;
+      const redirectUrl = req.session.redirectTo || '/';
+      delete req.session.redirectTo;
+      res.redirect(redirectUrl);
+    });
   },
 
   getLogout(req, res, next) {

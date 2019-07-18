@@ -19,10 +19,7 @@ async function seedPosts() {
           cities[random1000].latitude,
         ],
       },
-      author: {
-        _id: '5bb27cd1f986d278582aa58c',
-        username: 'ian',
-      },
+      author: '5bb27cd1f986d278582aa58c',
     };
     let post = new Post(postData);
     post.properties.description = `<strong><a href="/posts/${

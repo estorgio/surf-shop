@@ -21,6 +21,9 @@ const reviewsRouter = require('./routes/reviews');
 const app = express();
 
 // Connect to the database
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
 mongoose
   .connect('mongodb://localhost:27017/surf-shop-pagination', {
     useNewUrlParser: true,
@@ -61,13 +64,13 @@ app.use((req, res, next) => {
   //   '_id': '5d20b10621308a2cc0926eac',
   //   'username': 'john',
   // };
-  const reserveUsers = [
-    { _id: '5d286bde512a2b1754bc5909', username: 'john1' },
-    { _id: '5d286bee512a2b1754bc590a', username: 'john2' },
-    { _id: '5d286bf3512a2b1754bc590b', username: 'john3' },
-    { _id: '5d286bf9512a2b1754bc590c', username: 'john4' },
-  ];
-  req.user = reserveUsers[3];
+  // const reserveUsers = [
+  //   { _id: '5d286bde512a2b1754bc5909', username: 'john1' },
+  //   { _id: '5d286bee512a2b1754bc590a', username: 'john2' },
+  //   { _id: '5d286bf3512a2b1754bc590b', username: 'john3' },
+  //   { _id: '5d286bf9512a2b1754bc590c', username: 'john4' },
+  // ];
+  // req.user = reserveUsers[3];
 
   res.locals.currentUser = req.user;
   // set default page title
