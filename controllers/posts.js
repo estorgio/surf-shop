@@ -68,7 +68,7 @@ module.exports = {
     res.render('posts/show', { post, floorRating });
   },
 
-  async postEdit(req, res, next) {
+  postEdit(req, res, next) {
     res.render('posts/edit');
   },
 

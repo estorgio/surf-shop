@@ -25,10 +25,7 @@ mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
 mongoose
-  .connect('mongodb://localhost:27017/surf-shop-pagination', {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-  })
+  .connect('mongodb://localhost:27017/surf-shop')
   .then(() => console.log('Connected to the database'))
   .catch(err => console.log('Database error', err));
 

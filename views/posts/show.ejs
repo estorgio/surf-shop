@@ -30,8 +30,7 @@
     <input type="submit" value="Delete" />
   </form>
 </div>
-<% } %>
-
+<% } %> <% if (currentUser) { %>
 <h2>Create a Review</h2>
 <form action="/posts/<%= post.id %>/reviews" method="POST">
   <textarea name="review[body]" required></textarea>
@@ -60,6 +59,9 @@
   </fieldset>
   <input type="submit" />
 </form>
+<% } else { %>
+<a href="/login?returnTo=true"><h2>Create a Review</h2></a>
+<% } %>
 
 <!-- Display all reviews -->
 <h3>Reviews</h3>
@@ -69,7 +71,7 @@
   <%= review.body %><br />
   Rating: <%= review.rating %>
 </div>
-<% if (review.author.equals(currentUser._id)) { %>
+<% if (currentUser && review.author.equals(currentUser._id)) { %>
 <div>
   <button class="toggle-edit-form">Edit</button>
   <form
