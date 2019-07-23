@@ -32,4 +32,35 @@ module.exports = {
     req.session.error = 'Access denied!';
     res.redirect('back');
   },
+
+  isValidPassword: async (req, res, next) => {
+    const { user } = await User.authenticate()(
+      req.user.username,
+      req.body.currentPassword,
+    );
+    if (user) {
+      res.locals.user = user;
+      next();
+    } else {
+      req.session.error = 'Invalid password';
+      return res.redirect('/profile');
+    }
+  },
+
+  changePassword: async (req, res, next) => {
+    const { newPassword, confirmPassword } = req.body;
+
+    if (!newPassword || !confirmPassword) {
+      return next();
+    }
+
+    if (newPassword !== confirmPassword) {
+      req.session.error = 'Passwords do not match';
+      return res.redirect('/profile');
+    }
+
+    const { user } = res.locals;
+    await user.setPassword(newPassword);
+    next();
+  },
 };
